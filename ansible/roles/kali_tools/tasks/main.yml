@@ -1,0 +1,30 @@
+---
+# Pré-responde as telas de configuração ANTES de instalar, assim o apt
+# não abre nenhuma tela azul.
+- name: "KALI | Pré-responder as telas de configuração (debconf)"
+  become: true
+  ansible.builtin.debconf:
+    name: "{{ item.name }}"
+    question: "{{ item.question }}"
+    vtype: "{{ item.vtype }}"
+    value: "{{ item.value }}"
+  loop: "{{ kali_debconf }}"
+  loop_control:
+    label: "{{ item.question }} = {{ item.value }}"
+
+- name: "KALI | Instalar kali-linux-headless, seclists e wordlists (demora!)"
+  become: true
+  ansible.builtin.apt:
+    name: "{{ kali_packages }}"
+    state: present
+    update_cache: true
+    dpkg_options: force-confdef,force-confold
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: "KALI | Adicionar {{ kali_user }} aos grupos kismet e wireshark"
+  become: true
+  ansible.builtin.user:
+    name: "{{ kali_user }}"
+    groups: [kismet, wireshark]
+    append: true

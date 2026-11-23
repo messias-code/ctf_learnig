@@ -1,0 +1,6 @@
+---
+- name: "WORDLISTS | Descompactar a rockyou.txt"
+  become: true
+  ansible.builtin.shell: gzip -dc /usr/share/wordlists/rockyou.txt.gz > /usr/share/wordlists/rockyou.txt
+  args:
+    creates: /usr/share/wordlists/rockyou.txt

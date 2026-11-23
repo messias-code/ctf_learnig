@@ -1,0 +1,27 @@
+---
+kali_packages:
+  - kali-linux-headless
+  - seclists
+  - wordlists
+
+# Usuário adicionado aos grupos kismet e wireshark (padrão: quem rodou o playbook)
+kali_user: "{{ ansible_user_id }}"
+
+# Respostas das 7 telas azuis (debconf) — ver seção 3 do wsl2_kali.md
+kali_debconf:
+  # Tela 1 — libc6: reiniciar serviços sem perguntar → Yes
+  - { name: libc6, question: libraries/restart-without-asking, vtype: boolean, value: "true" }
+  # Tela 2 — layout do teclado → English (US)
+  - { name: keyboard-configuration, question: keyboard-configuration/xkb-keymap, vtype: select, value: us }
+  - { name: keyboard-configuration, question: keyboard-configuration/layoutcode, vtype: string, value: us }
+  - { name: keyboard-configuration, question: keyboard-configuration/variant, vtype: select, value: "English (US)" }
+  # Tela 3 — kismet setuid root → Yes
+  - { name: kismet-capture-common, question: kismet-capture-common/install-setuid, vtype: boolean, value: "true" }
+  # Tela 4 — usuários do grupo kismet → seu usuário
+  - { name: kismet-capture-common, question: kismet-capture-common/install-users, vtype: string, value: "{{ kali_user }}" }
+  # Tela 5 — macchanger: trocar MAC automaticamente → No
+  - { name: macchanger, question: macchanger/automatically_run, vtype: boolean, value: "false" }
+  # Tela 6 — wireshark: usuários comuns capturam pacotes → Yes
+  - { name: wireshark-common, question: wireshark-common/install-setuid, vtype: boolean, value: "true" }
+  # Tela 7 — sslh → standalone
+  - { name: sslh, question: sslh/inetd_or_standalone, vtype: select, value: standalone }

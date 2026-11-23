@@ -165,6 +165,27 @@ Com a janela do KeX aberta, aperte **`F8`** para abrir o menu — lá dá para *
 
 ---
 
+## 🤖 Modo automático (Ansible)
+
+As etapas **2 a 5** podem rodar sozinhas com o playbook da pasta [`ansible/`](ansible/) (guia completo em [`ansible/README.md`](ansible/README.md)) — mesmo padrão do [orion-workstation](https://github.com/messias-code/orion-workstation). As **7 telas azuis** são pré-respondidas via `debconf`, então nenhuma aparece.
+
+```bash
+# depois do "wsl --install -d kali-linux" (etapa 1, no Windows)
+sudo apt update && sudo apt install -y ansible git
+cd ansible
+ansible-playbook playbooks/site.yml   # pede a senha do sudo uma vez
+```
+
+| Arquivo | Para quê |
+|---------|----------|
+| `inventory/group_vars/all.yml` | Liga/desliga cada etapa (`true`/`false`) |
+| `roles/kali_tools/defaults/main.yml` | Pacotes e respostas das 7 telas |
+
+> 💡 O usuário do kismet/wireshark é detectado automaticamente (quem rodou o playbook).
+> A **senha do VNC** do Win-KeX continua sendo criada no primeiro `kex --win -s`.
+
+---
+
 ## 🧾 Cola rápida
 
 ```bash

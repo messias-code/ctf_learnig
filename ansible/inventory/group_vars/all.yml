@@ -1,0 +1,14 @@
+---
+# =================================================================================
+# VARIÁVEIS DE CONFIGURAÇÃO - (true/false) para personalizar a instalação
+# =================================================================================
+
+setup:
+  # --- apt update + dist-upgrade ---
+  update_system: true
+  # --- kali-linux-headless + seclists + wordlists (com as 7 telas pré-respondidas) ---
+  kali_tools: true
+  # --- Descompacta a rockyou.txt ---
+  wordlists: true
+  # --- Interface gráfica Win-KeX ---
+  win_kex: true
