@@ -13,7 +13,7 @@
   vars:
     # Quem rodou o playbook, mesmo que tenha usado sudo
     usuario: "{{ lookup('env', 'SUDO_USER') or lookup('env', 'USER') }}"
-    casa: "{{ getent_passwd[usuario][4] }}"
+    casa: "{{ ansible_facts['getent_passwd'][usuario][4] }}"
     nome_host: labs
     pacotes:
       - kali-linux-headless
