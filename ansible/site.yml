@@ -1,0 +1,55 @@
+---
+- name: Kali CTF no WSL2
+  hosts: localhost
+  become: true
+
+  vars:
+    usuario: "{{ lookup('env', 'USER') }}"
+    pacotes:
+      - kali-linux-headless
+      - seclists
+      - wordlists
+      - kali-win-kex
+
+    # Respostas das telas azuis que aparecem durante a instalação
+    respostas:
+      - { pacote: libc6,                  pergunta: libraries/restart-without-asking,       tipo: boolean, valor: "true" }
+      - { pacote: keyboard-configuration, pergunta: keyboard-configuration/xkb-keymap,      tipo: select,  valor: us }
+      - { pacote: kismet-capture-common,  pergunta: kismet-capture-common/install-setuid,   tipo: boolean, valor: "true" }
+      - { pacote: kismet-capture-common,  pergunta: kismet-capture-common/install-users,    tipo: string,  valor: "{{ usuario }}" }
+      - { pacote: macchanger,             pergunta: macchanger/automatically_run,           tipo: boolean, valor: "false" }
+      - { pacote: wireshark-common,       pergunta: wireshark-common/install-setuid,        tipo: boolean, valor: "true" }
+      - { pacote: sslh,                   pergunta: sslh/inetd_or_standalone,               tipo: select,  valor: standalone }
+
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+  tasks:
+    - name: Responder as telas de configuração
+      ansible.builtin.debconf:
+        name: "{{ item.pacote }}"
+        question: "{{ item.pergunta }}"
+        vtype: "{{ item.tipo }}"
+        value: "{{ item.valor }}"
+      loop: "{{ respostas }}"
+
+    - name: Atualizar o sistema
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+
+    - name: Instalar ferramentas, wordlists e Win-KeX (demora)
+      ansible.builtin.apt:
+        name: "{{ pacotes }}"
+        dpkg_options: force-confdef,force-confold
+
+    - name: Liberar captura de pacotes sem sudo (grupos kismet e wireshark)
+      ansible.builtin.user:
+        name: "{{ usuario }}"
+        groups: [kismet, wireshark]
+        append: true
+
+    - name: Descompactar a rockyou.txt
+      ansible.builtin.shell: gzip -dc /usr/share/wordlists/rockyou.txt.gz > /usr/share/wordlists/rockyou.txt
+      args:
+        creates: /usr/share/wordlists/rockyou.txt

@@ -1,9 +1,0 @@
----
-# A senha do VNC continua sendo criada no primeiro `kex --win -s`.
-- name: "WIN-KEX | Instalar o Win-KeX"
-  become: true
-  ansible.builtin.apt:
-    name: kali-win-kex
-    state: present
-  environment:
-    DEBIAN_FRONTEND: noninteractive

@@ -1,8 +1,0 @@
----
-- name: "UPDATE & UPGRADE | Atualizar o sistema"
-  become: true
-  ansible.builtin.apt:
-    update_cache: true
-    upgrade: dist
-  environment:
-    DEBIAN_FRONTEND: noninteractive
