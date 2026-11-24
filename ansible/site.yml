@@ -20,6 +20,13 @@
       - seclists
       - wordlists
       - kali-win-kex
+      - burpsuite         # interceptar e alterar requisições web
+      - wireshark         # abrir capturas .pcap com interface gráfica
+      - steghide          # extrair dados escondidos em imagens/áudio
+      - stegseek          # quebrar a senha do steghide com wordlist
+      - sonic-visualiser  # ver espectrograma de áudio (mensagens escondidas)
+      - hexedit           # editar arquivos em hexadecimal (consertar cabeçalho)
+      - rlwrap            # setas e histórico no nc (shell reverso)
 
     # Respostas das telas azuis que aparecem durante a instalação
     respostas:

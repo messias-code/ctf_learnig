@@ -6,6 +6,7 @@ Deixa o Kali no WSL2 pronto para CTF com um comando. As telas azuis de configura
 
 - Atualiza o sistema
 - Instala `kali-linux-headless`, `seclists`, `wordlists` e `kali-win-kex`
+- Instala as ferramentas que o [guia para iniciantes](../beginners/README.md) usa e que não vêm no headless: `burpsuite`, `wireshark`, `steghide`, `stegseek`, `sonic-visualiser`, `hexedit` e `rlwrap`
 - Deixa seu usuário capturar pacotes sem sudo (grupos `kismet` e `wireshark`)
 - Descompacta a `rockyou.txt` em `/usr/share/wordlists/`
 - Instala o Claude Code (`claude`) e o Antigravity CLI (`agy`) no seu usuário
@@ -50,11 +51,16 @@ mv /mnt/c/Users/<seu-usuario-do-windows>/Downloads/<arquivo-baixado>.ovpn ~/ctf_
 chmod 600 ~/ctf_learnig/start_ctf.ovpn
 ```
 
-3. Conecte:
+3. Conecte com o script `vpn.sh` (fica na raiz do repositório). Ele roda a VPN em segundo plano, espera conectar e mostra seu IP na VPN:
 
 ```bash
-sudo openvpn ~/ctf_learnig/start_ctf.ovpn
+~/ctf_learnig/vpn.sh start   # conecta
+~/ctf_learnig/vpn.sh test    # está funcionando? qual meu IP?
+~/ctf_learnig/vpn.sh test 10.64.12.34   # também confere se a máquina do laboratório responde
+~/ctf_learnig/vpn.sh stop    # desconecta
 ```
+
+O log da conexão fica em `/run/thm-vpn.log` (leia com `sudo cat`).
 
 > O `.gitignore` ignora `*.ovpn`, então o arquivo nunca vai para o GitHub.
 
