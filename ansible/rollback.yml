@@ -1,0 +1,51 @@
+---
+# Desfaz o que o site.yml fez. A atualização do sistema não tem como desfazer.
+- name: Rollback do Kali CTF no WSL2
+  hosts: localhost
+  become: true
+
+  vars:
+    usuario: "{{ lookup('env', 'USER') }}"
+    # Mesma lista do site.yml
+    pacotes:
+      - kali-linux-headless
+      - seclists
+      - wordlists
+      - kali-win-kex
+
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+  tasks:
+    - name: Tirar o usuário dos grupos kismet e wireshark
+      ansible.builtin.command: gpasswd -d {{ usuario }} {{ item }}
+      loop: [kismet, wireshark]
+      register: grupo
+      changed_when: grupo.rc == 0
+      failed_when: false
+
+    - name: Apagar a rockyou.txt descompactada
+      ansible.builtin.file:
+        path: /usr/share/wordlists/rockyou.txt
+        state: absent
+
+    - name: Remover ferramentas, wordlists e Win-KeX
+      ansible.builtin.apt:
+        name: "{{ pacotes }}"
+        state: absent
+        purge: true
+
+    # Remove o que veio junto (kismet, wireshark, macchanger, sslh...) e,
+    # com o purge, as respostas das telas desses pacotes
+    - name: Remover as dependências que sobraram
+      ansible.builtin.apt:
+        autoremove: true
+        purge: true
+
+    # libc6 não pode ser removido, então só volta a resposta ao padrão
+    - name: Voltar a resposta da tela do libc6 ao padrão
+      ansible.builtin.debconf:
+        name: libc6
+        question: libraries/restart-without-asking
+        vtype: boolean
+        value: "false"
