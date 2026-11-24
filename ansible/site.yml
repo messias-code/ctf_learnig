@@ -3,8 +3,18 @@
   hosts: localhost
   become: true
 
+  # Senha da chave SSH, pedida logo depois da senha do sudo
+  vars_prompt:
+    - name: senha_ssh
+      prompt: "Senha para a nova chave SSH"
+      private: true
+      confirm: true
+
   vars:
-    usuario: "{{ lookup('env', 'USER') }}"
+    # Quem rodou o playbook, mesmo que tenha usado sudo
+    usuario: "{{ lookup('env', 'SUDO_USER') or lookup('env', 'USER') }}"
+    casa: "{{ getent_passwd[usuario][4] }}"
+    nome_host: labs
     pacotes:
       - kali-linux-headless
       - seclists
@@ -23,6 +33,17 @@
 
   environment:
     DEBIAN_FRONTEND: noninteractive
+
+  pre_tasks:
+    - name: Garantir que o usuário não é o root
+      ansible.builtin.assert:
+        that: usuario | length > 0 and usuario != 'root'
+        fail_msg: "Rode como seu usuário normal: ansible-playbook site.yml (sem sudo, sem logar como root)"
+
+    - name: Achar a pasta home do usuário
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ usuario }}"
 
   tasks:
     - name: Responder as telas de configuração
@@ -53,3 +74,46 @@
       ansible.builtin.shell: gzip -dc /usr/share/wordlists/rockyou.txt.gz > /usr/share/wordlists/rockyou.txt
       args:
         creates: /usr/share/wordlists/rockyou.txt
+
+    # O WSL aplica o hostname e regenera o /etc/hosts no próximo boot
+    - name: Trocar o hostname para {{ nome_host }}
+      ansible.builtin.blockinfile:
+        path: /etc/wsl.conf
+        create: true
+        marker: "# {mark} HOSTNAME (ansible)"
+        block: |
+          [network]
+          hostname = {{ nome_host }}
+
+    - name: Instalar Claude Code e Antigravity CLI
+      become_user: "{{ usuario }}"
+      environment:
+        HOME: "{{ casa }}"
+      ansible.builtin.shell:
+        cmd: set -o pipefail && curl -fsSL {{ item.url }} | bash
+        executable: /bin/bash
+        creates: "{{ casa }}/.local/bin/{{ item.bin }}"
+      loop:
+        - { url: "https://claude.ai/install.sh", bin: claude }
+        - { url: "https://antigravity.google/cli/install.sh", bin: agy }
+
+    - name: Criar a pasta ~/.ssh
+      ansible.builtin.file:
+        path: "{{ casa }}/.ssh"
+        state: directory
+        owner: "{{ usuario }}"
+        group: "{{ usuario }}"
+        mode: "0700"
+
+    # Se a chave já existir, não mexe nela
+    - name: Gerar a chave SSH {{ usuario }}@{{ nome_host }}
+      become_user: "{{ usuario }}"
+      ansible.builtin.command:
+        argv: [ssh-keygen, -q, -t, ed25519, -f, "{{ casa }}/.ssh/id_ed25519", -C, "{{ usuario }}@{{ nome_host }}", -N, "{{ senha_ssh }}"]
+        creates: "{{ casa }}/.ssh/id_ed25519"
+      no_log: true
+
+  post_tasks:
+    - name: Aviso final
+      ansible.builtin.debug:
+        msg: "Pronto. Para o hostname '{{ nome_host }}' valer, rode no PowerShell: wsl --shutdown  e abra o Kali de novo."

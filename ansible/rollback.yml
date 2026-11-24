@@ -5,7 +5,8 @@
   become: true
 
   vars:
-    usuario: "{{ lookup('env', 'USER') }}"
+    usuario: "{{ lookup('env', 'SUDO_USER') or lookup('env', 'USER') }}"
+    casa: "{{ getent_passwd[usuario][4] }}"
     # Mesma lista do site.yml
     pacotes:
       - kali-linux-headless
@@ -16,7 +17,58 @@
   environment:
     DEBIAN_FRONTEND: noninteractive
 
+  pre_tasks:
+    # Protege o rm do ~/.ssh: com usuário errado apagaria a pasta errada
+    - name: Garantir que o usuário não é o root
+      ansible.builtin.assert:
+        that: usuario | length > 0 and usuario != 'root'
+        fail_msg: "Rode como seu usuário normal: ansible-playbook rollback.yml (sem sudo, sem logar como root)"
+
+    - name: Achar a pasta home do usuário
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ usuario }}"
+
   tasks:
+    - name: Voltar o hostname ao padrão do WSL (nome do Windows)
+      ansible.builtin.blockinfile:
+        path: /etc/wsl.conf
+        marker: "# {mark} HOSTNAME (ansible)"
+        state: absent
+
+    # Apaga também login, conversas e configurações: depois é preciso logar de novo
+    - name: Remover Claude Code e Antigravity CLI (com dados de sessão)
+      ansible.builtin.file:
+        path: "{{ casa }}/{{ item }}"
+        state: absent
+      loop:
+        - .local/bin/claude
+        - .local/share/claude
+        - .cache/claude
+        - .cache/claude-cli-nodejs
+        - .local/state/claude
+        - .claude
+        - .claude.json
+        - .local/bin/agy
+        - .cache/antigravity
+        - .config/antigravity
+        - .gemini
+
+    - name: Listar tudo dentro do ~/.ssh
+      ansible.builtin.find:
+        paths: "{{ casa }}/.ssh"
+        file_type: any
+        hidden: true
+      register: ssh
+
+    - name: Apagar tudo dentro do ~/.ssh (rm -rf ~/.ssh/*)
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ ssh.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+
     - name: Tirar o usuário dos grupos kismet e wireshark
       ansible.builtin.command: gpasswd -d {{ usuario }} {{ item }}
       loop: [kismet, wireshark]

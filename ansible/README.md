@@ -8,6 +8,9 @@ Deixa o Kali no WSL2 pronto para CTF com um comando. As telas azuis de configura
 - Instala `kali-linux-headless`, `seclists`, `wordlists` e `kali-win-kex`
 - Deixa seu usuário capturar pacotes sem sudo (grupos `kismet` e `wireshark`)
 - Descompacta a `rockyou.txt` em `/usr/share/wordlists/`
+- Instala o Claude Code (`claude`) e o Antigravity CLI (`agy`) no seu usuário
+- Troca o hostname para `labs` (vale depois de `wsl --shutdown`)
+- Gera a chave SSH `~/.ssh/id_ed25519` com o comentário `usuario@labs`, protegida por uma senha que você digita na hora (se a chave já existir, ela não é tocada)
 
 ## Como usar
 
@@ -24,7 +27,7 @@ sudo apt update && sudo apt install -y ansible
 ansible-playbook site.yml
 ```
 
-Ele pede a senha do sudo no início. A instalação das ferramentas demora e não mostra progresso, então é só esperar.
+Rode **sem `sudo`**: o playbook usa o seu usuário e para com erro se for o root. Ele pede a senha do sudo no início e, em seguida, a senha da chave SSH (duas vezes, para confirmar). A instalação das ferramentas demora e não mostra progresso, então é só esperar.
 
 ## Arquivos
 
@@ -61,8 +64,10 @@ sudo openvpn ~/ctf_learnig/start_ctf.ovpn
 ansible-playbook rollback.yml
 ```
 
-Remove as ferramentas, as wordlists e o Win-KeX, junto com o que veio com eles (kismet, wireshark etc.). Também apaga a `rockyou.txt`, tira você dos grupos `kismet` e `wireshark` e desfaz as respostas das telas. A atualização do sistema (`apt upgrade`) não tem como desfazer. Se você tiver adicionado pacotes na lista `pacotes` do `site.yml`, coloque os mesmos na lista do `rollback.yml`.
+Remove as ferramentas, as wordlists e o Win-KeX, junto com o que veio com eles (kismet, wireshark etc.). Também apaga a `rockyou.txt`, tira você dos grupos `kismet` e `wireshark`, desfaz as respostas das telas, remove o Claude Code e o Antigravity CLI e volta o hostname ao padrão do WSL (nome do Windows, depois de `wsl --shutdown`). Os dados de sessão deles (`~/.claude`, `~/.claude.json`, `~/.gemini`, `~/.config/antigravity`) também são apagados: login, conversas e configurações. Para usar de novo, é preciso logar outra vez.
+
+> ⚠️ O rollback **apaga tudo dentro de `~/.ssh`**: chaves, `known_hosts`, `authorized_keys`, tudo. Faça backup antes se precisar de alguma chave. A atualização do sistema (`apt upgrade`) não tem como desfazer. Se você tiver adicionado pacotes na lista `pacotes` do `site.yml`, coloque os mesmos na lista do `rollback.yml`.
 
 ## Depois de rodar
 
-Abra um terminal novo para os grupos valerem. O Win-KeX fica instalado e pronto. Para abrir a interface gráfica quando quiser, use `kex --win -s`. Na primeira vez ele pede para criar uma senha do VNC.
+Rode `wsl --shutdown` no PowerShell e abra o Kali de novo para o hostname `labs` e os grupos valerem. O Win-KeX fica instalado e pronto. Para abrir a interface gráfica quando quiser, use `kex --win -s`. Na primeira vez ele pede para criar uma senha do VNC.
