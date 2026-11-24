@@ -114,6 +114,12 @@
       no_log: true
 
   post_tasks:
-    - name: Aviso final
+    - name: AVISO - reinicie o WSL
       ansible.builtin.debug:
-        msg: "Pronto. Para o hostname '{{ nome_host }}' valer, rode no PowerShell: wsl --shutdown  e abra o Kali de novo."
+        msg:
+          - "Instalação concluída. Falta reiniciar o WSL para tudo valer:"
+          - "  - hostname '{{ nome_host }}'"
+          - "  - grupos kismet e wireshark (captura sem sudo)"
+          - "  - claude e agy no PATH"
+          - "No PowerShell do Windows rode:  wsl --shutdown"
+          - "Depois abra o Kali de novo."

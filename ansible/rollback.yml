@@ -101,3 +101,13 @@
         question: libraries/restart-without-asking
         vtype: boolean
         value: "false"
+
+  post_tasks:
+    - name: AVISO - reinicie o WSL
+      ansible.builtin.debug:
+        msg:
+          - "Rollback concluído. Falta reiniciar o WSL para tudo valer:"
+          - "  - hostname volta ao padrão (nome do Windows)"
+          - "  - saída dos grupos kismet e wireshark"
+          - "No PowerShell do Windows rode:  wsl --shutdown"
+          - "Depois abra o Kali de novo."
