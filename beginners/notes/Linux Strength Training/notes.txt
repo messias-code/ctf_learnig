@@ -1,0 +1,77 @@
+#Task 2:
+    ## Procura por arquivo
+    find /home/topson -type f -name ReadMeIfStuck.txt 2>/dev/null
+    find /home/topson -type f -name additionalHINT 2>/dev/null
+
+    ## Procura por nome de diretorio:
+    find /home/topson -type d -name 'telephone numbers' 2>/dev/null
+    cd '/home/topson/corperateFiles/xch/telephone numbers'
+    find /home/topson -type d -name 'workflows' 2>/dev/null
+
+    ## Procura por data de modificação
+    find /home/topson/workflows -type f -newermt 2016-09-12
+
+    ## Procura pelo caracter "{"
+    grep -iRl '{' /home/topson/workflows
+    cat /home/topson/workflows/xft/eBQRhHvx | tr ' ' '\n' |grep '{'
+
+    ## Flag: Flag{81726350827fe53g}
+
+#Task 3:
+
+    ## Procura pelo arquivo:
+    find /home/topson -type f -name readME_hint.txt 2>/dev/null
+
+    ## Procura pelo diretorio:
+    find /home/topson -type d -name '*march*' 2>/dev/null
+
+    ## Procura pelo arquivo:
+    find /home/topson -type f -name '*MoveMe.txt*' 2>/dev/null
+
+    ## Move arquivo para o diretorio:
+    mv '/home/topson/corperateFiles/RecordsFinances/-MoveMe.txt' '/home/topson/corperateFiles/RecordsFinances/-march folder'
+    cd '/home/topson/corperateFiles/RecordsFinances/-march folder'
+
+    # Executa o sh:
+    ./-runME.sh
+
+#Task 4:
+    # Instala ferramenta para descobrir o tipo de hash
+    sudo apt install name-that-hash
+
+    # Descobre o tipo de hash (ele monta em ordem de probabilidade)
+    nth -t 5d7845ac6ee7cfffafc5fe5f35cf666d
+
+    # Descobre o hash (nesse caso é md5 e por isso o "-m 0"):
+    hashcat -m 0 '5d7845ac6ee7cfffafc5fe5f35cf666d' /usr/share/wordlists/rockyou.txt
+
+    # Descobre onde tá o arquivo:
+    find /home/sarah -type f -name '*hashA.txt*' 2>/dev/null
+
+    # Descobre o tipo de hash (dessa vez usando somente o hashcat):
+    hashcat --identify 'f9d4049dd6a4dc35d40e5265954b2a46'
+
+    # Descobre a senha no hash (usando também o hashcat):
+    hashcat -m 900 'f9d4049dd6a4dc35d40e5265954b2a46' /usr/share/wordlists/crackstation.txt
+
+    # Procura arquivo:
+    find /home/sarah -type f -name '*hashB.txt*' 2>/dev/null
+
+    # descobre o hash:
+    nth -t b7a875fc1ea228b9061041b7cec4bd3c52ab3ce3
+
+    # procura o arquivo:
+    find /home/sarah -type f -name '*hashC.txt*' 2>/dev/null
+
+    # procura pela extenção:
+    find /home/sarah -type f -iname "*.mnf*" 2>/dev/null
+
+    # envia arquivo para meu kali:
+    scp 'sarah@10.64.174.226:/home/sarah/system AB/db/ww.mnf' .
+
+    # descobre o hash:
+    hashcat -m 1400 'c05e35377b5a31f428ccda9724a9dfbd0c5d71dccac691228d803c78e2e8da29' ww.mnf
+
+    # descobre o hash:
+    hashcat -hh | grep -i 'SHA1' | head -n 1
+    hashcat -m 100 'b7a875fc1ea228b9061041b7cec4bd3c52ab3ce3' /usr/share/wordlists/crackstation.txt
