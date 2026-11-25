@@ -82,6 +82,18 @@
       args:
         creates: /usr/share/wordlists/rockyou.txt
 
+    # 4,5 GB para baixar e ~15 GB no disco. Baixa num .part e só renomeia
+    # no fim, para um download interrompido não contar como pronto.
+    - name: Baixar e descompactar a wordlist da CrackStation (demora)
+      ansible.builtin.shell:
+        cmd: >-
+          set -o pipefail &&
+          wget -qO- https://crackstation.net/files/crackstation.txt.gz
+          | gzip -dc > /usr/share/wordlists/crackstation.txt.part &&
+          mv /usr/share/wordlists/crackstation.txt.part /usr/share/wordlists/crackstation.txt
+        executable: /bin/bash
+        creates: /usr/share/wordlists/crackstation.txt
+
     # O WSL aplica o hostname e regenera o /etc/hosts no próximo boot
     - name: Trocar o hostname para {{ nome_host }}
       ansible.builtin.blockinfile:

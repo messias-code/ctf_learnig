@@ -9,6 +9,7 @@ Deixa o Kali no WSL2 pronto para CTF com um comando. As telas azuis de configura
 - Instala as ferramentas que o [guia para iniciantes](../beginners/README.md) usa e que não vêm no headless: `burpsuite`, `wireshark`, `steghide`, `stegseek`, `sonic-visualiser`, `hexedit` e `rlwrap`
 - Deixa seu usuário capturar pacotes sem sudo (grupos `kismet` e `wireshark`)
 - Descompacta a `rockyou.txt` em `/usr/share/wordlists/`
+- Baixa e descompacta a wordlist completa da [CrackStation](https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm) em `/usr/share/wordlists/crackstation.txt` (4,5 GB de download, ~15 GB no disco; demora)
 - Instala o Claude Code (`claude`) e o Antigravity CLI (`agy`) no seu usuário
 - Troca o hostname para `labs` (vale depois de `wsl --shutdown`)
 - Gera a chave SSH `~/.ssh/id_ed25519` com o comentário `usuario@labs`, protegida por uma senha que você digita na hora (se a chave já existir, ela não é tocada)
@@ -70,7 +71,7 @@ O log da conexão fica em `/run/thm-vpn.log` (leia com `sudo cat`).
 ansible-playbook rollback.yml
 ```
 
-Remove as ferramentas, as wordlists e o Win-KeX, junto com o que veio com eles (kismet, wireshark etc.). Também apaga a `rockyou.txt`, tira você dos grupos `kismet` e `wireshark`, desfaz as respostas das telas, remove o Claude Code e o Antigravity CLI e volta o hostname ao padrão do WSL (nome do Windows, depois de `wsl --shutdown`). Os dados de sessão deles (`~/.claude`, `~/.claude.json`, `~/.gemini`, `~/.config/antigravity`) também são apagados: login, conversas e configurações. Para usar de novo, é preciso logar outra vez.
+Remove as ferramentas, as wordlists e o Win-KeX, junto com o que veio com eles (kismet, wireshark etc.). Também apaga a `rockyou.txt` e a `crackstation.txt`, tira você dos grupos `kismet` e `wireshark`, desfaz as respostas das telas, remove o Claude Code e o Antigravity CLI e volta o hostname ao padrão do WSL (nome do Windows, depois de `wsl --shutdown`). Os dados de sessão deles (`~/.claude`, `~/.claude.json`, `~/.gemini`, `~/.config/antigravity`) também são apagados: login, conversas e configurações. Para usar de novo, é preciso logar outra vez.
 
 > ⚠️ O rollback **apaga tudo dentro de `~/.ssh`**: chaves, `known_hosts`, `authorized_keys`, tudo. Faça backup antes se precisar de alguma chave. A atualização do sistema (`apt upgrade`) não tem como desfazer. Se você tiver adicionado pacotes na lista `pacotes` do `site.yml`, coloque os mesmos na lista do `rollback.yml`.
 

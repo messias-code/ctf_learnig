@@ -88,6 +88,14 @@
         path: /usr/share/wordlists/rockyou.txt
         state: absent
 
+    - name: Apagar a wordlist da CrackStation
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /usr/share/wordlists/crackstation.txt
+        - /usr/share/wordlists/crackstation.txt.part
+
     - name: Remover ferramentas, wordlists e Win-KeX
       ansible.builtin.apt:
         name: "{{ pacotes }}"
