@@ -6,10 +6,9 @@ Chegou a hora de fazer sozinho. Estes são 30 desafios **fáceis** do TryHackMe,
 
 ## Como fazer cada CTF
 
-1. Crie o arquivo de notas pelo [modelo](05-metodologia-e-cola.md#-modelo-de-anotações-por-sala).
-2. Siga a [receita](05-metodologia-e-cola.md#-a-receita-de-quase-todo-ctf-iniciante): reconhecimento, enumeração, acesso inicial, escalação.
-3. Travou 30 minutos? Leia **só a dica** do ponto onde parou num writeup.
-4. Terminou? Leia um writeup inteiro e anote em "O que aprendi de novo" o que você fez diferente.
+1. Siga a [receita](05-metodologia-e-cola.md#-a-receita-de-quase-todo-ctf-iniciante): reconhecimento, enumeração, acesso inicial, escalação.
+2. Travou 30 minutos? Leia **só a dica** do ponto onde parou num writeup.
+3. Terminou? Leia um writeup inteiro e anote o que você fez diferente.
 
 O campo **Pratica** diz a área de cada sala sem entregar a solução. Não pesquise a resolução antes de tentar.
 

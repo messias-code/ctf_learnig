@@ -173,15 +173,9 @@ Avisos como `DEPRECATED OPTION`, `mssfix cannot be used` ou `Kernel support for 
 
 > O TryHackMe também oferece a **AttackBox**, um Kali que abre no navegador. Ela funciona, mas a conta gratuita tem tempo limitado por dia. Use o seu Kali como padrão e a AttackBox só se a VPN der problema.
 
-## 📝 Crie sua pasta de anotações
+## 📝 Anotações
 
-Ainda no Kali, rode:
-
-```bash
-mkdir -p ~/ctf_learnig/notas
-```
-
-Isso cria uma pasta `notas` onde você vai guardar um arquivo por sala. O modelo está no [arquivo 5](05-metodologia-e-cola.md#-modelo-de-anotações-por-sala).
+Anote o que encontrar em cada sala: IPs, portas, senhas, comandos que funcionaram e ideias que não deram certo. O formato é com você. Pode ser um `.md` por sala, um caderno, o que funcionar melhor para você. O importante é conseguir reler depois.
 
 ## Salas desta fase
 

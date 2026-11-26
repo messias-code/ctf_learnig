@@ -12,7 +12,7 @@ O objetivo aqui **não é** terminar rápido. É entender cada passo. Então:
 
 1. Antes de rodar um comando que a sala mandou, diga para você mesmo **por que** ele está ali.
 2. Depois de rodar, leia a saída inteira. Não pule para a resposta.
-3. Preencha o [modelo de anotações](05-metodologia-e-cola.md#-modelo-de-anotações-por-sala) como se fosse um CTF de verdade.
+3. Anote o que for descobrindo, do jeito que preferir, como se fosse um CTF de verdade.
 4. Quando terminar, feche tudo e tente **refazer a sala sem ler as instruções**, só com suas anotações. Se conseguir, você aprendeu.
 
 O passo 4 parece perda de tempo. É o passo mais importante do guia inteiro.
@@ -36,6 +36,6 @@ O passo 4 parece perda de tempo. É o passo mais importante do guia inteiro.
 - [ ] Refiz a **Vulnversity** do zero usando só minhas anotações.
 - [ ] Consigo explicar as 4 etapas (reconhecimento, enumeração, acesso inicial, escalação) usando a Vulnversity como exemplo.
 - [ ] Sei montar e receber um shell reverso sem copiar da sala.
-- [ ] Tenho um arquivo de anotações para cada uma das 4 salas.
+- [ ] Tenho anotações das 4 salas.
 
 [⬅ Ferramentas](03-ferramentas.md) · [Sumário](README.md) · [Próximo: Metodologia e cola ➡](05-metodologia-e-cola.md)

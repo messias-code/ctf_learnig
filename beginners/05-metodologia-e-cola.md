@@ -120,42 +120,4 @@ find / -name "*.txt" -path "*flag*" 2>/dev/null
 6. **Depois de terminar, leia um writeup.** Mesmo tendo conseguido. Você vai descobrir caminhos mais rápidos e técnicas novas.
 7. **Reiniciou a máquina? O IP mudou.** Atualize o `/etc/hosts` e suas anotações.
 
-## 📝 Modelo de anotações por sala
-
-Crie um arquivo por máquina em `~/ctf_learnig/notas/nome-da-sala.md` e copie isto:
-
-```markdown
-# Nome da Sala:
-- **Data:**
-- **IP do Alvo:**
-- **Meu IP (tun0):**
-
-## Portas Abertas (Nmap)
--
-
-## Páginas / Pastas Encontradas
--
-
-## Usuários / Senhas / Pistas
--
-
-## O que tentei e não funcionou
--
-
-## Como entrei (acesso inicial)
--
-
-## Como virei root
--
-
-## Flags
-- User:
-- Root:
-
-## O que aprendi de novo
--
-```
-
-As seções **"O que tentei e não funcionou"** e **"O que aprendi de novo"** são as que mais te fazem evoluir. Não pule.
-
 [⬅ Primeiras invasões guiadas](04-primeiras-invasoes-guiadas.md) · [Sumário](README.md) · [Próximo: Trilha dos 30 CTFs ➡](06-trilha-30-ctfs.md)

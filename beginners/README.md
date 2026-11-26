@@ -13,7 +13,7 @@ Este guia é para quem **não sabe nada**: nunca abriu um terminal, não sabe o 
 | 2 | [Redes e Web](02-redes-e-web.md) | IP, portas, serviços, como um site funciona por dentro | 1 a 2 semanas |
 | 3 | [Ferramentas](03-ferramentas.md) | Nmap, Gobuster, Burp, Hydra, John, shells e escalação de privilégio | 2 a 3 semanas |
 | 4 | [Primeiras invasões guiadas](04-primeiras-invasoes-guiadas.md) | Juntar tudo em máquinas reais, com passo a passo | 1 semana |
-| 5 | [Metodologia e cola](05-metodologia-e-cola.md) | A receita de todo CTF, comandos prontos e modelo de anotações | Consulta sempre |
+| 5 | [Metodologia e cola](05-metodologia-e-cola.md) | A receita de todo CTF, comandos prontos e dicas para não travar | Consulta sempre |
 | 6 | [Trilha dos 30 CTFs](06-trilha-30-ctfs.md) | 30 desafios fáceis, em ordem, para fazer sozinho | 1 a 3 meses |
 
 Os tempos são para quem estuda cerca de 1 hora por dia. Ir mais devagar é normal.
@@ -39,7 +39,7 @@ Os tempos são para quem estuda cerca de 1 hora por dia. Ir mais devagar é norm
 - [ ] Fase 2: Redes e Web
 - [ ] Fase 3: Ferramentas
 - [ ] Fase 4: Primeiras invasões guiadas
-- [ ] Fase 5: Li a metodologia e montei meu modelo de anotações
+- [ ] Fase 5: Li a metodologia
 - [ ] Fase 6: 10 de 30 CTFs
 - [ ] Fase 6: 20 de 30 CTFs
 - [ ] Fase 6: 30 de 30 CTFs 🏁
