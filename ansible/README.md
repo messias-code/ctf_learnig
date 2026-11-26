@@ -14,6 +14,7 @@ Deixa o Kali no WSL2 pronto para CTF com um comando. As telas azuis de configura
 - Troca o hostname para `labs` (vale depois de `wsl --shutdown`)
 - Tira as pastas do Windows (`/mnt/c/...`) do PATH (`appendWindowsPath = false` no `/etc/wsl.conf`). Varrer essas pastas é lento e deixava os comandos vermelhos no Warp. Só o VS Code volta ao PATH, para o `code .` continuar funcionando; outros comandos do Windows (`explorer.exe` etc.) passam a precisar do caminho completo
 - Troca o shell padrão para o `zsh` (o padrão do Kali, com autocompletar e sugestões melhores)
+- Coloca `export GPG_TTY=$(tty)` no `~/.zshrc` e no `~/.bashrc` e reinicia o `gpg-agent`. Sem isso, a tela de senha do `gpg` não aparece e ele falha
 - Gera a chave SSH `~/.ssh/id_ed25519` com o comentário `usuario@labs`, protegida por uma senha que você digita na hora (se a chave já existir, ela não é tocada)
 
 ## Como usar
@@ -73,7 +74,7 @@ O log da conexão fica em `/run/thm-vpn.log` (leia com `sudo cat`).
 ansible-playbook rollback.yml
 ```
 
-Remove as ferramentas, as wordlists e o Win-KeX, junto com o que veio com eles (kismet, wireshark etc.). Também apaga a `rockyou.txt` e a `crackstation.txt`, tira você dos grupos `kismet` e `wireshark`, desfaz as respostas das telas, remove o Claude Code e o Antigravity CLI, devolve as pastas do Windows ao PATH, volta o shell para o `bash` e volta o hostname ao padrão do WSL (nome do Windows, depois de `wsl --shutdown`). Os dados de sessão deles (`~/.claude`, `~/.claude.json`, `~/.gemini`, `~/.config/antigravity`) também são apagados: login, conversas e configurações. Para usar de novo, é preciso logar outra vez.
+Remove as ferramentas, as wordlists e o Win-KeX, junto com o que veio com eles (kismet, wireshark etc.). Também apaga a `rockyou.txt` e a `crackstation.txt`, tira você dos grupos `kismet` e `wireshark`, desfaz as respostas das telas, remove o Claude Code e o Antigravity CLI, devolve as pastas do Windows ao PATH, volta o shell para o `bash`, tira o `GPG_TTY` e volta o hostname ao padrão do WSL (nome do Windows, depois de `wsl --shutdown`). Os dados de sessão deles (`~/.claude`, `~/.claude.json`, `~/.gemini`, `~/.config/antigravity`) também são apagados: login, conversas e configurações. Para usar de novo, é preciso logar outra vez.
 
 > ⚠️ O rollback **apaga tudo dentro de `~/.ssh`**: chaves, `known_hosts`, `authorized_keys`, tudo. Faça backup antes se precisar de alguma chave. A atualização do sistema (`apt upgrade`) não tem como desfazer. Se você tiver adicionado pacotes na lista `pacotes` do `site.yml`, coloque os mesmos na lista do `rollback.yml`.
 

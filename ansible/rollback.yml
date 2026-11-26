@@ -57,6 +57,13 @@
         state: absent
       loop: [.zshrc, .bashrc]
 
+    - name: Tirar o GPG_TTY do ~/.zshrc e do ~/.bashrc
+      ansible.builtin.blockinfile:
+        path: "{{ casa }}/{{ item }}"
+        marker: "# {mark} GPG_TTY (ansible)"
+        state: absent
+      loop: [.zshrc, .bashrc]
+
     - name: Voltar o shell padrão para o bash
       ansible.builtin.user:
         name: "{{ usuario }}"

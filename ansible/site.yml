@@ -167,6 +167,26 @@
           unset vscode
       loop: [.zshrc, .bashrc]
 
+    # Sem isso o gpg não sabe em qual terminal abrir a tela da senha
+    # (pinentry) e falha sem perguntar nada
+    - name: Dizer ao gpg qual é o terminal (GPG_TTY)
+      ansible.builtin.blockinfile:
+        path: "{{ casa }}/{{ item }}"
+        create: true
+        owner: "{{ usuario }}"
+        group: "{{ usuario }}"
+        mode: "0644"
+        marker: "# {mark} GPG_TTY (ansible)"
+        block: export GPG_TTY=$(tty)
+      loop: [.zshrc, .bashrc]
+      register: gpg_tty
+
+    # O gpg-agent que já estava rodando guardou o terminal antigo
+    - name: Reiniciar o gpg-agent
+      become_user: "{{ usuario }}"
+      ansible.builtin.command: gpgconf --kill gpg-agent
+      when: gpg_tty.changed
+
     - name: Instalar Claude Code e Antigravity CLI
       become_user: "{{ usuario }}"
       environment:
