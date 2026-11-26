@@ -3,13 +3,6 @@
   hosts: localhost
   become: true
 
-  # Senha da chave SSH, pedida logo depois da senha do sudo
-  vars_prompt:
-    - name: senha_ssh
-      prompt: "Senha para a nova chave SSH"
-      private: true
-      confirm: true
-
   vars:
     # Quem rodou o playbook, mesmo que tenha usado sudo
     usuario: "{{ lookup('env', 'SUDO_USER') or lookup('env', 'USER') }}"
@@ -52,6 +45,35 @@
       ansible.builtin.getent:
         database: passwd
         key: "{{ usuario }}"
+
+    # A senha da chave SSH só é pedida se a chave ainda não existir.
+    # Fica aqui no começo para o resto da instalação seguir sem perguntas.
+    - name: Ver se a chave SSH já existe
+      ansible.builtin.stat:
+        path: "{{ casa }}/.ssh/id_ed25519"
+      register: chave_ssh
+
+    - name: Pedir a senha da nova chave SSH
+      when: not chave_ssh.stat.exists
+      block:
+        - name: Senha para a nova chave SSH
+          ansible.builtin.pause:
+            prompt: "Senha para a nova chave SSH"
+            echo: false
+          register: senha_ssh
+
+        - name: Confirmar a senha
+          ansible.builtin.pause:
+            prompt: "Confirme a senha"
+            echo: false
+          register: senha_ssh_confirma
+
+        - name: Conferir se as duas senhas são iguais
+          ansible.builtin.assert:
+            that: senha_ssh.user_input == senha_ssh_confirma.user_input
+            fail_msg: "As senhas não batem. Rode o playbook de novo."
+            quiet: true
+          no_log: true
 
   tasks:
     - name: Responder as telas de configuração
@@ -167,9 +189,10 @@
 
     # Se a chave já existir, não mexe nela
     - name: Gerar a chave SSH {{ usuario }}@{{ nome_host }}
+      when: not chave_ssh.stat.exists
       become_user: "{{ usuario }}"
       ansible.builtin.command:
-        argv: [ssh-keygen, -q, -t, ed25519, -f, "{{ casa }}/.ssh/id_ed25519", -C, "{{ usuario }}@{{ nome_host }}", -N, "{{ senha_ssh }}"]
+        argv: [ssh-keygen, -q, -t, ed25519, -f, "{{ casa }}/.ssh/id_ed25519", -C, "{{ usuario }}@{{ nome_host }}", -N, "{{ senha_ssh.user_input }}"]
         creates: "{{ casa }}/.ssh/id_ed25519"
       no_log: true
 

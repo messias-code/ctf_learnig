@@ -31,7 +31,7 @@ sudo apt update && sudo apt install -y ansible
 ansible-playbook site.yml
 ```
 
-Rode **sem `sudo`**: o playbook usa o seu usuário e para com erro se for o root. Ele pede a senha do sudo no início e, em seguida, a senha da chave SSH (duas vezes, para confirmar). A instalação das ferramentas demora e não mostra progresso, então é só esperar.
+Rode **sem `sudo`**: o playbook usa o seu usuário e para com erro se for o root. Ele pede a senha do sudo no início e, em seguida, a senha da chave SSH (duas vezes, para confirmar). Se a chave `~/.ssh/id_ed25519` já existir, essa pergunta é pulada. A instalação das ferramentas demora e não mostra progresso, então é só esperar.
 
 ## Arquivos
 
