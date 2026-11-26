@@ -57,6 +57,11 @@
         state: absent
       loop: [.zshrc, .bashrc]
 
+    - name: Voltar o shell padrão para o bash
+      ansible.builtin.user:
+        name: "{{ usuario }}"
+        shell: /bin/bash
+
     # Apaga também login, conversas e configurações: depois é preciso logar de novo
     - name: Remover Claude Code e Antigravity CLI (com dados de sessão)
       ansible.builtin.file:
@@ -138,6 +143,7 @@
           - "Rollback concluído. Falta reiniciar o WSL para tudo valer:"
           - "  - hostname volta ao padrão (nome do Windows)"
           - "  - pastas do Windows de volta no PATH"
+          - "  - bash como shell padrão"
           - "  - saída dos grupos kismet e wireshark"
           - "No PowerShell do Windows rode:  wsl --shutdown"
           - "Depois abra o Kali de novo."

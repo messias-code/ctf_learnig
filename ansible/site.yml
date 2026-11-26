@@ -125,6 +125,11 @@
       register: usuario_windows
       changed_when: false
 
+    - name: Usar o zsh como shell padrão
+      ansible.builtin.user:
+        name: "{{ usuario }}"
+        shell: /usr/bin/zsh
+
     # Vai nos dois arquivos para o code funcionar no zsh e no bash
     - name: Colocar o VS Code (code) de volta no PATH
       ansible.builtin.blockinfile:
@@ -175,6 +180,7 @@
           - "Instalação concluída. Falta reiniciar o WSL para tudo valer:"
           - "  - hostname '{{ nome_host }}'"
           - "  - PATH sem as pastas do Windows (comandos verdes no Warp)"
+          - "  - zsh como shell padrão"
           - "  - grupos kismet e wireshark (captura sem sudo)"
           - "  - claude e agy no PATH"
           - "No PowerShell do Windows rode:  wsl --shutdown"
