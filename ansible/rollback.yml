@@ -44,6 +44,19 @@
         marker: "# {mark} HOSTNAME (ansible)"
         state: absent
 
+    - name: Devolver as pastas do Windows ao PATH
+      ansible.builtin.blockinfile:
+        path: /etc/wsl.conf
+        marker: "# {mark} INTEROP (ansible)"
+        state: absent
+
+    - name: Tirar o VS Code do ~/.zshrc e do ~/.bashrc
+      ansible.builtin.blockinfile:
+        path: "{{ casa }}/{{ item }}"
+        marker: "# {mark} VSCODE (ansible)"
+        state: absent
+      loop: [.zshrc, .bashrc]
+
     # Apaga também login, conversas e configurações: depois é preciso logar de novo
     - name: Remover Claude Code e Antigravity CLI (com dados de sessão)
       ansible.builtin.file:
@@ -124,6 +137,7 @@
         msg:
           - "Rollback concluído. Falta reiniciar o WSL para tudo valer:"
           - "  - hostname volta ao padrão (nome do Windows)"
+          - "  - pastas do Windows de volta no PATH"
           - "  - saída dos grupos kismet e wireshark"
           - "No PowerShell do Windows rode:  wsl --shutdown"
           - "Depois abra o Kali de novo."

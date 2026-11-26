@@ -105,6 +105,41 @@
           [network]
           hostname = {{ nome_host }}
 
+    # O WSL junta todas as pastas do Windows (/mnt/c/...) ao PATH. Varrer
+    # essas pastas é lento, e o Warp deixa os comandos vermelhos sem
+    # reconhecer nenhum programa. Desligando, só o VS Code volta (abaixo).
+    - name: Tirar as pastas do Windows do PATH
+      ansible.builtin.blockinfile:
+        path: /etc/wsl.conf
+        create: true
+        marker: "# {mark} INTEROP (ansible)"
+        block: |
+          [interop]
+          appendWindowsPath = false
+
+    # O cmd.exe reclama se a pasta atual não for do Windows, por isso o chdir
+    - name: Descobrir o usuário do Windows
+      ansible.builtin.command: /mnt/c/Windows/System32/cmd.exe /c "echo %USERNAME%"
+      args:
+        chdir: /mnt/c
+      register: usuario_windows
+      changed_when: false
+
+    # Vai nos dois arquivos para o code funcionar no zsh e no bash
+    - name: Colocar o VS Code (code) de volta no PATH
+      ansible.builtin.blockinfile:
+        path: "{{ casa }}/{{ item }}"
+        create: true
+        owner: "{{ usuario }}"
+        group: "{{ usuario }}"
+        mode: "0644"
+        marker: "# {mark} VSCODE (ansible)"
+        block: |
+          vscode="/mnt/c/Users/{{ usuario_windows.stdout | trim }}/AppData/Local/Programs/Microsoft VS Code/bin"
+          [ -d "$vscode" ] && export PATH="$PATH:$vscode"
+          unset vscode
+      loop: [.zshrc, .bashrc]
+
     - name: Instalar Claude Code e Antigravity CLI
       become_user: "{{ usuario }}"
       environment:
@@ -139,6 +174,7 @@
         msg:
           - "Instalação concluída. Falta reiniciar o WSL para tudo valer:"
           - "  - hostname '{{ nome_host }}'"
+          - "  - PATH sem as pastas do Windows (comandos verdes no Warp)"
           - "  - grupos kismet e wireshark (captura sem sudo)"
           - "  - claude e agy no PATH"
           - "No PowerShell do Windows rode:  wsl --shutdown"
