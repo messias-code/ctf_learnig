@@ -1,8 +1,8 @@
 # 💪 Linux Strength Training
 
-Sala do TryHackMe para treinar o terminal do Linux: achar arquivos, lidar com nomes estranhos, identificar e quebrar hashes, decodificar base64 e abrir arquivos criptografados com o `gpg`.
+Sala do TryHackMe para treinar o terminal do Linux: achar arquivos, lidar com nomes estranhos, identificar e quebrar hashes, decodificar base64, abrir arquivos criptografados com o `gpg` e consultar um banco MySQL.
 
-Os usuários da máquina são `topson` (tasks 2 e 3) e `sarah` (tasks 4 a 7). Onde aparece `<IP>`, use o IP da máquina, que muda cada vez que você liga a sala.
+Os usuários da máquina são `topson` (tasks 2 e 3) e `sarah` (tasks 4 a 8). No fim da task 9 você entra como `james`. Onde aparece `<IP>`, use o IP da máquina, que muda cada vez que você liga a sala.
 
 ## 🧰 O que a sala ensina
 
@@ -17,6 +17,9 @@ Os usuários da máquina são `topson` (tasks 2 e 3) e `sarah` (tasks 4 a 7). On
 | `gpg` | Criptografar e descriptografar arquivos |
 | `gpg2john` + `john` | Quebrar a senha de um arquivo `.gpg` |
 | `scp` | Copiar arquivos da máquina alvo para o Kali |
+| `mysql` | Abrir e consultar um banco de dados |
+| `unzip` | Descompactar arquivos `.zip` |
+| `ssh` + `sudo` | Entrar como outro usuário e ler arquivos do `root` |
 
 > 💡 Em todos os `find`, o `2>/dev/null` joga fora os erros de "Permissão negada". Sem ele, a resposta se perde no meio dos erros.
 
@@ -48,7 +51,7 @@ find /home/topson/workflows -type f -newermt 2016-09-12
 A flag tem `{`, então dá para procurar por esse caractere. O `-R` procura nas subpastas, o `-i` ignora maiúsculas e o `-l` mostra só o nome do arquivo:
 
 ```bash
-grep -iRl '{' /home/topson/workflows
+grep -iRl '{' /home/topson/workflows/
 ```
 
 O arquivo é uma linha enorme. O `tr` coloca uma palavra por linha, e o `grep` separa só a que tem a flag:
@@ -56,8 +59,6 @@ O arquivo é uma linha enorme. O `tr` coloca uma palavra por linha, e o `grep` s
 ```bash
 cat /home/topson/workflows/xft/eBQRhHvx | tr ' ' '\n' | grep '{'
 ```
-
-🚩 **Flag:** `Flag{81726350827fe53g}`
 
 ---
 
@@ -233,8 +234,6 @@ find /home/sarah/ -type f -name layer1.txt 2>/dev/null
 gpg /home/sarah/logs/zmn/layer1.txt
 ```
 
-> ⚠️ Se o `gpg` não mostrar a tela para digitar a senha, falta o `GPG_TTY`. O playbook do [Ansible](../../../ansible/README.md) já configura.
-
 ---
 
 ## Task 7: quebrar a senha de um `.gpg`
@@ -289,4 +288,147 @@ Abrir. O `-d` mostra o conteúdo direto na tela, sem criar o arquivo `personal.t
 gpg -d personal.txt.gpg
 ```
 
-> 🧹 No fim, apague o que foi copiado (`hash`, `data.txt`, `*.gpg`) para não ir parar no git.
+---
+
+## Task 8: banco de dados MySQL
+
+Achar o arquivo `.sql`, que guarda os comandos para montar o banco:
+
+```bash
+find /home/sarah/ -type f -name employees.sql 2>/dev/null
+```
+
+Entrar na pasta do arquivo (a pasta, não o arquivo) e abrir o MySQL com o usuário `sarah`. O `-p` faz ele pedir a senha, que é `password`:
+
+```bash
+cd /home/sarah/serverLx
+mysql -u sarah -p
+```
+
+Daqui em diante os comandos são digitados **dentro do MySQL** e terminam com `;`.
+
+O `source` roda o `employees.sql` e cria o banco. Como você está na mesma pasta, basta o nome do arquivo:
+
+```sql
+source employees.sql;
+```
+
+Listar os bancos, escolher o `employees` e listar as tabelas dele:
+
+```sql
+show databases;
+use employees;
+show tables;
+```
+
+Mostrar tudo o que existe na tabela `employees` (o `*` é "todas as colunas"):
+
+```sql
+select * from employees;
+```
+
+Para sair do MySQL, `exit`.
+
+---
+
+## Task 9: juntando tudo
+
+### Os chats
+
+Os logs de conversa ficam em `/home/shared/chatlogs`. O `LpnQ` é o ponto de partida:
+
+```bash
+cd /home/shared/chatlogs && cat LpnQ
+```
+
+Ver quais outros logs falam do Sameer (`-l` mostra só o nome dos arquivos):
+
+```bash
+grep -iRl 'Sameer' /home/shared/chatlogs/
+```
+
+### O arquivo de 50 MB
+
+Os chats levam à pasta `/home/shared/sql`:
+
+```bash
+cd /home/shared/sql/ && ls
+```
+
+Achar, dentro de `conf/`, o arquivo de exatamente 50 MB. O `-size` procura pelo tamanho:
+
+```bash
+find conf/ -type f -size 50M
+```
+
+Procurar nele a linha que fala de um diretório:
+
+```bash
+grep 'dir' conf/JKpN
+```
+
+O caminho está em base64:
+
+```bash
+echo 'aG9tZS9zYW1lZXIvSGlzdG9yeSBMQi9sYWJtaW5kL2xhdGVzdEJ1aWxkL2NvbmZpZ0JEQgo=' | base64 -d
+```
+
+Sai `home/sameer/History LB/labmind/latestBuild/configBDB`. Falta a `/` no começo, então o caminho completo é `/home/sameer/History LB/labmind/latestBuild/configBDB`.
+
+### A lista de senhas
+
+A dica é que a senha começa com `ebq`. O `^` no `grep` quer dizer "começo da linha".
+
+Ver quais arquivos têm linhas assim:
+
+```bash
+grep -iRl '^ebq' '/home/sameer/History LB/labmind/latestBuild/configBDB'
+```
+
+Ver as linhas em si:
+
+```bash
+grep -iR '^ebq' '/home/sameer/History LB/labmind/latestBuild/configBDB'
+```
+
+Salvar todas numa wordlist. O `-h` tira o nome do arquivo do começo de cada linha, deixando só a senha:
+
+```bash
+grep -hR '^ebq' '/home/sameer/History LB/labmind/latestBuild/configBDB' > ebqlist.txt
+```
+
+### O zip criptografado
+
+Testando as senhas da lista uma a uma, a certa é `ebqattle`:
+
+```bash
+gpg 2020-08-13.zip.gpg
+```
+
+> 💡 Em vez de testar na mão, dá para fazer como na task 7: copiar o `.gpg` e o `ebqlist.txt` para o Kali e rodar `gpg2john 2020-08-13.zip.gpg > hash` e `john --format=gpg --wordlist=ebqlist.txt hash`.
+
+Descompactar o zip. O `-d` diz em qual pasta colocar o conteúdo:
+
+```bash
+unzip 2020-08-13.zip -d conteudo
+```
+
+### Entrar como james e ler o `/root`
+
+Procurar no conteúdo do zip algo sobre o james. Aparece a senha dele, `vuimaxcullings`:
+
+```bash
+grep -iR 'james' /home/shared/sql/conteudo
+```
+
+Entrar como james (rodar **no Kali**):
+
+```bash
+ssh james@<IP>
+```
+
+O james pode usar o `sudo`, então consegue ler a pasta do `root`. Procurar a linha que começa com `Flag`:
+
+```bash
+sudo grep -iR '^Flag' /root/
+```
