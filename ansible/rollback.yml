@@ -20,6 +20,7 @@
       - sonic-visualiser  # ver espectrograma de áudio (mensagens escondidas)
       - hexedit           # editar arquivos em hexadecimal (consertar cabeçalho)
       - rlwrap            # setas e histórico no nc (shell reverso)
+      - name-that-hash    # nth: descobrir o tipo de um hash
 
   environment:
     DEBIAN_FRONTEND: noninteractive

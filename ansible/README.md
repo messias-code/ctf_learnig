@@ -6,7 +6,7 @@ Deixa o Kali no WSL2 pronto para CTF com um comando. As telas azuis de configura
 
 - Atualiza o sistema
 - Instala `kali-linux-headless`, `seclists`, `wordlists` e `kali-win-kex`
-- Instala as ferramentas que o [guia para iniciantes](../beginners/README.md) usa e que não vêm no headless: `burpsuite`, `wireshark`, `steghide`, `stegseek`, `sonic-visualiser`, `hexedit` e `rlwrap`
+- Instala as ferramentas que o [guia para iniciantes](../beginners/README.md) usa e que não vêm no headless: `burpsuite`, `wireshark`, `steghide`, `stegseek`, `sonic-visualiser`, `hexedit`, `rlwrap` e `name-that-hash` (`nth`)
 - Deixa seu usuário capturar pacotes sem sudo (grupos `kismet` e `wireshark`)
 - Descompacta a `rockyou.txt` em `/usr/share/wordlists/`
 - Baixa e descompacta a wordlist completa da [CrackStation](https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm) em `/usr/share/wordlists/crackstation.txt` (4,5 GB de download, ~15 GB no disco; demora)
