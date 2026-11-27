@@ -187,6 +187,113 @@
       ansible.builtin.command: gpgconf --kill gpg-agent
       when: gpg_tty.changed
 
+    # O login e o kali-motd (/etc/profile.d/kali.sh) pulam a mensagem
+    # quando esse arquivo existe
+    - name: Esconder a mensagem de boas-vindas (~/.hushlogin)
+      ansible.builtin.copy:
+        content: ""
+        dest: "{{ casa }}/.hushlogin"
+        force: false
+        owner: "{{ usuario }}"
+        group: "{{ usuario }}"
+        mode: "0644"
+
+    # A sessão gráfica (kex) roda o xdg-user-dirs-update, que cria Desktop,
+    # Downloads, Documents etc. Apontando todas para a própria home e
+    # desligando o update, nenhuma pasta é criada.
+    - name: Criar a pasta ~/.config
+      ansible.builtin.file:
+        path: "{{ casa }}/.config"
+        state: directory
+        owner: "{{ usuario }}"
+        group: "{{ usuario }}"
+        mode: "0755"
+
+    - name: Não criar as pastas padrão (Downloads, Documents...)
+      ansible.builtin.copy:
+        dest: "{{ casa }}/.config/{{ item.arquivo }}"
+        content: "{{ item.conteudo }}"
+        owner: "{{ usuario }}"
+        group: "{{ usuario }}"
+        mode: "0644"
+      loop:
+        - arquivo: user-dirs.conf
+          conteudo: "enabled=False\n"
+        - arquivo: user-dirs.dirs
+          conteudo: |
+            XDG_DESKTOP_DIR="$HOME/"
+            XDG_DOWNLOAD_DIR="$HOME/"
+            XDG_TEMPLATES_DIR="$HOME/"
+            XDG_PUBLICSHARE_DIR="$HOME/"
+            XDG_DOCUMENTS_DIR="$HOME/"
+            XDG_MUSIC_DIR="$HOME/"
+            XDG_PICTURES_DIR="$HOME/"
+            XDG_VIDEOS_DIR="$HOME/"
+            XDG_PROJECTS_DIR="$HOME/"
+      loop_control:
+        label: "{{ item.arquivo }}"
+
+    # Se o kex já foi aberto antes do playbook, as pastas já existem.
+    # Só apaga as que estão vazias, para não perder nada.
+    - name: Apagar as pastas padrão que já existem e estão vazias
+      ansible.builtin.command:
+        argv:
+          - find
+          - "{{ casa }}"
+          - -mindepth
+          - "1"
+          - -maxdepth
+          - "1"
+          - -type
+          - d
+          - -empty
+          - (
+          - -name
+          - Desktop
+          - -o
+          - -name
+          - Downloads
+          - -o
+          - -name
+          - Templates
+          - -o
+          - -name
+          - Public
+          - -o
+          - -name
+          - Documents
+          - -o
+          - -name
+          - Music
+          - -o
+          - -name
+          - Pictures
+          - -o
+          - -name
+          - Videos
+          - -o
+          - -name
+          - Projects
+          - )
+          - -print
+          - -delete
+      register: pastas_vazias
+      changed_when: pastas_vazias.stdout | length > 0
+
+    # O Xfce do kex tenta iniciar as notificações pelo systemd do usuário.
+    # Lá o programa não vê a tela do kex e cai no Wayland do WSLg, que não
+    # tem o protocolo wlr-layer-shell: erro "Unable to start notification
+    # daemon". Mascarado, o systemctl falha na hora e o Xfce abre o
+    # programa direto, já na tela do kex.
+    - name: Mascarar o xfce4-notifyd no systemd do usuário
+      become_user: "{{ usuario }}"
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][usuario][1] }}"
+      ansible.builtin.systemd_service:
+        name: xfce4-notifyd.service
+        scope: user
+        masked: true
+
     - name: Instalar Claude Code e Antigravity CLI
       become_user: "{{ usuario }}"
       environment:

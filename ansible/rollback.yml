@@ -64,6 +64,26 @@
         state: absent
       loop: [.zshrc, .bashrc]
 
+    - name: Voltar a mensagem de boas-vindas e as pastas padrão
+      ansible.builtin.file:
+        path: "{{ casa }}/{{ item }}"
+        state: absent
+      loop:
+        - .hushlogin
+        - .config/user-dirs.conf
+        - .config/user-dirs.dirs
+
+    # Antes de remover os pacotes, enquanto o serviço ainda existe
+    - name: Desmascarar o xfce4-notifyd no systemd do usuário
+      become_user: "{{ usuario }}"
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_facts['getent_passwd'][usuario][1] }}"
+      ansible.builtin.systemd_service:
+        name: xfce4-notifyd.service
+        scope: user
+        masked: false
+      failed_when: false
+
     - name: Voltar o shell padrão para o bash
       ansible.builtin.user:
         name: "{{ usuario }}"
